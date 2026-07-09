@@ -1,4 +1,4 @@
-package net.likelion.bebc25.spring;
+package net.likelion.bebc25.spring.aop.staticproxy;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
     @Bean   // 스프링 Bean으로 등록 (메서드명인 car가 Bean의 이름이 됨)
     public Car car() {
-//        return new GasolineCar();
-        return new HybridCar();
+//        Car target = new GasolineCar();
+        Car target = new HybridCar();
+        Car logProxy = new LogProxy(target);
+        return logProxy;
     }
 
     @Bean
