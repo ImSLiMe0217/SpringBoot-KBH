@@ -1,9 +1,11 @@
-package net.likelion.bebc25.board02.controller;
+package net.likelion.bebc25.board02.post.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.board02.post.dto.PostDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ public class BoardController {
         post1.setTitle("1번 게시글");
         post1.setContent("1번 게시글 내용입니다.");
         post1.setAuthor("하루");
+        post1.setSecret(true);
         post1.setCreatedAt(LocalDateTime.now());
 
         PostDto post2 = new PostDto();
@@ -36,11 +39,14 @@ public class BoardController {
 
         fakePosts.add(post1);
         fakePosts.add(post2);
+
+
     }
 
     // 모든 게시글 목록을 반환한다.
     public List<PostDto> getPosts() {
-        return fakePosts;
+        List<PostDto> list = fakePosts;
+        return list;
     }
 
     // 게시글 목록 조회하는 컨트롤러
@@ -48,6 +54,7 @@ public class BoardController {
     public String getBoardList(Model model) {
         // 게시글 목록 조회(데이터)
         List<PostDto> posts = getPosts();
+
         model.addAttribute("posts", posts);
         return "board/list";
     }
@@ -55,9 +62,21 @@ public class BoardController {
     // 게시글 상세 조회하는 컨트롤러
     @GetMapping("/detail.html")
     public String getDetail(@RequestParam("id") int id, Model model) {
-        PostDto post = getPosts().get(id - 1);
+        PostDto post = getPost(id);
+
         model.addAttribute("post", post);
-        return "board/detail";
+        return "board/detail"; // 템플릿 파일 경로
+    }
+
+    // 지정한 id의 게시글을 반환한다.
+    public PostDto getPost(int id) {
+        List<PostDto> posts = getPosts();
+        for (PostDto org : posts) {
+            if (org.getId() == id) {
+                return org;
+            }
+        }
+        throw new IllegalArgumentException(id + "번 게시글은 존재하지 않습니다.");
     }
 
     // 게시글 등록 화면을 요청하는 컨트롤러
@@ -70,22 +89,19 @@ public class BoardController {
     // 게시글 수정 화면을 요청하는 컨트롤러
     @GetMapping("/edit.html")
     public String getEditForm(@RequestParam("id") int id, Model model) {
-        PostDto post = getPosts().get(id);
+        PostDto post = getPost(id);
 
         model.addAttribute("postForm", post);
         return "board/write";
     }
 
-
     // 게시글 등록 요청을 처리하는 컨트롤러
     @PostMapping("/write")
-    public String writePost(@RequestParam("title") String title,
-                            @RequestParam("content") String content,
-                            @RequestParam("author") String author) {
-
-        PostDto post = new PostDto(title, content, author);
+    public String writePost(@Valid @ModelAttribute("postForm") PostDto post, // Validation 검증 대상 객체
+                            BindingResult bindingResult) {  // Validation 검증 결과 저장 객체 (대상 객체 뒤에 기술해야함)
         log.debug(post.toString());
 
+        if(bindingResult.hasErrors()) return "board/write";
         savePost(post);
 
         return "redirect:list.html"; // 브라우저에 list.html로 재요청하라고 응답
@@ -93,45 +109,43 @@ public class BoardController {
 
     // 게시글을 등록한다.
     public void savePost(PostDto post) {
-        post.setId(getPosts().getLast().getId() + 1);
+        PostDto lastPost = getPosts().getLast();
+        post.setId(lastPost.getId() + 1);
         post.setCreatedAt(LocalDateTime.now());
         fakePosts.add(post);
     }
 
     // 게시글 수정 요청을 처리하는 컨트롤러
     @PostMapping("/edit")
-    public String editPost(@ModelAttribute PostDto post) {
+    public String editPost(@Valid @ModelAttribute("postForm") PostDto post,
+                           BindingResult bindingResult) {
         log.debug(post.toString());
+
+        if (bindingResult.hasErrors()) return "board/write";
         updatePost(post);
-        return "redirect:detail.html?id="+post.getId();
+        return "redirect:detail.html?id=" + post.getId();
     }
 
     // 게시글을 수정한다.
     public void updatePost(PostDto post) {
         PostDto targetPost = null;
-        for (PostDto org : getPosts()) {
+        List<PostDto> posts = getPosts();
+        for (PostDto org : posts) {
             if (org.getId() == post.getId()) {
                 targetPost = org;
                 break;
             }
         }
 
+//        posts.remove(targetPost);
+
         targetPost.setTitle(post.getTitle());
         targetPost.setContent(post.getContent());
         targetPost.setAuthor(post.getAuthor());
     }
 
-
-    // 게시글 삭제 요청을 처리하는 컨트롤러
-    @PostMapping("/delete")
-    public String deletePost(PostDto post) {
-        log.debug(post.toString());
-        updatePost(post);
-        return "redirect:detail.html?id=" + post.getId();
-    }
-
     // 게시글을 삭제한다.
-    public void deletePost(int id) {
+    public void removePost(int id) {
         List<PostDto> posts = getPosts();
         for (PostDto org : posts) {
             if (org.getId() == id) {
@@ -140,4 +154,13 @@ public class BoardController {
             }
         }
     }
+
+    // 게시글 삭제 요청을 처리하는 컨트롤러
+    @PostMapping("/delete")
+    public String deletePost(@RequestParam int id) {
+        log.debug(id + " 삭제 요청.");
+        removePost(id);
+        return "redirect:list.html";
+    }
+
 }

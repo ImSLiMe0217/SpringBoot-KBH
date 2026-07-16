@@ -8,11 +8,13 @@
 </head>
 <body>
   <div class="container">
-    <h1>게시글 상세 정보</h1>
-    <div class="nav">
-      <a href="list.html">목록으로</a>
-      <a href="write.html">새 글 쓰기</a>
-    </div>
+      <th:block th:insert="~{layout/common :: nav-header('게시글 상세 정보')}">
+        <h1>게시글 상세 정보</h1>
+        <div class="nav">
+          <a href="list.html">목록으로</a>
+          <a href="write.html">새 글 쓰기</a>
+        </div>
+      </th:block>
 
     <table style="margin-bottom: 20px;">
       <tr>
@@ -39,7 +41,7 @@
     </table>
 
     <div>
-      <a th:href="@{edit.html(id = ${post.id - 1})}" class="btn">수정하기</a>
+      <a th:href="@{edit.html(id = ${post.id})}" class="btn">수정하기</a>
       <a href="list.html" class="btn btn-secondary">목록으로</a>
     </div>
   </div>
