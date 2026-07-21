@@ -26,7 +26,6 @@ public class JdbcTemplatePostRepository implements PostRepository{
                 rs.getString("author"),
                 rs.getBoolean("secret"),
                 rs.getObject("created_at", LocalDateTime.class));
-//        return PostDto.builder().id().title().author().createdAt().content().secret();
     };
 
     @Override

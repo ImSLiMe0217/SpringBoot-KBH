@@ -17,33 +17,35 @@
             </div>
         </th:block>
 
-    <form th:action="@{{action}(action=${postForm.id == 0} ? 'write' : 'edit')}" method="POST" th:object="${postForm}">
-        <input type="hidden" th:field="*{id}">
-        <div class="form-group">
-            <label for="title">제목</label>
-            <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요" required>
-            <div class="field-error" th:if="${#fields.hasErrors('title')}">에러 메세지</div>
-        </div>
+        <form th:action="@{{action}(action=${postForm.id == 0} ? 'write' : 'edit')}" method="POST"
+              th:object="${postForm}">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-group">
+                <label for="title">제목</label>
+                <input type="text" id="title" th:field="*{title}" placeholder="제목을 입력하세요" required>
+                <div class="field-error" th:if="${#fields.hasErrors('title')}">에러 메세지</div>
+            </div>
 
-        <div class="form-group">
-            <label for="author">작성자</label>
-            <input type="text" id="author" th:field="*{author}" placeholder="작성자 이름을 입력하세요" required>
-            <div class="field-error" th:if="${#fields.hasErrors('author')}">에러 메세지</div>
-        </div>
+            <div class="form-group">
+                <label for="author">작성자</label>
+                <input type="text" id="author" th:field="*{author}" placeholder="작성자 이름을 입력하세요" required>
+                <div class="field-error" th:if="${#fields.hasErrors('author')}">에러 메세지</div>
+            </div>
 
-        <div class="form-group">
-            <label for="content">내용</label>
-            <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요" required></textarea>
-            <div class="field-error" th:if="${#fields.hasErrors('content')}">에러 메세지</div>
-        </div>
+            <div class="form-group">
+                <label for="content">내용</label>
+                <textarea id="content" th:field="*{content}" rows="10" placeholder="내용을 입력하세요" required></textarea>
+                <div class="field-error" th:if="${#fields.hasErrors('content')}">에러 메세지</div>
+            </div>
 
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn" th:text="${postForm.id == 0} ? '등록' : '수정'">등록</button>
-            <a th:if="${postForm.id == 0}" th:href="@{list.html}" class="btn btn-secondary">취소</a>
-            <a th:unless="${postForm.id == 0}" th:href="@{detail.html(id=${postForm.id})}"
-               class="btn btn-secondary">취소</a>
-        </div>
-    </form>
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn" th:text="${postForm.id == 0} ? '등록' : '수정'">등록</button>
+                <a th:if="${postForm.id == 0}" th:href="@{list.html}" class="btn btn-secondary">취소</a>
+                <a th:unless="${postForm.id == 0}" th:href="@{detail.html(id=${postForm.id})}"
+                   class="btn btn-secondary">취소</a>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>
