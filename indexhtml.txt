@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>멋사라이브</title>
+
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header class="header">
+
+    <!--
+        헤더 로고
+        이미지 자체에는 링크를 걸지 않았음.
+        홈으로 이동시키고 싶으면 img를 a로 감싸면 됨.
+    -->
+    <div class="header-brand">
+        <img
+                th:src="@{/images/logo/mutsa-live-logo.png}"
+                src="/images/logo/mutsa-live-logo.png"
+                alt="멋사라이브"
+                class="header-logo"
+        >
+    </div>
+
+
+    <!-- 로그인 사용자 영역 -->
+    <div class="header-user">
+
+        <!-- 프로필 이미지만 클릭 가능 -->
+        <a th:href="@{/member/profile}"
+           class="profile-link">
+
+            <img
+                    th:src="${member.profileImage}"
+                    src="/images/profile/default-profile.png"
+                    alt="프로필 사진"
+                    class="profile-image"
+            >
+
+        </a>
+
+
+        <div class="greeting">
+            <span>안녕하세요,</span>
+
+            <!--
+                Thymeleaf가 로그인한 사용자의 nickname을 출력
+                예: 루나
+            -->
+            <strong
+                    class="nickname"
+                    th:text="${member.nickname}">
+                루나
+            </strong>
+
+            <span>님! 👋</span>
+        </div>
+
+
+        <!-- 회원가입 버튼 -->
+        <button
+                type="button"
+                class="btn btn-signup"
+                th:onclick="|location.href='@{/member/join}'|">
+            회원가입
+        </button>
+
+
+        <!-- 로그아웃 -->
+        <form
+                th:action="@{/logout}"
+                method="post">
+
+            <button
+                    type="submit"
+                    class="btn btn-logout">
+                로그아웃
+            </button>
+
+        </form>
+
+    </div>
+
+</header>
+
+
+<!-- ==================== MAIN ==================== -->
+<main class="main">
+
+
+    <!-- ==================== HERO ==================== -->
+    <section class="hero">
+
+        <!--
+            가운데 로고 + 멋사라이브 글자가
+            하나의 이미지라고 가정
+        -->
+        <img
+                th:src="@{/images/logo/mutsa-live-hero.png}"
+                src="/images/logo/mutsa-live-hero.png"
+                alt="멋사라이브"
+                class="hero-logo"
+        >
+
+        <p class="hero-description">
+            관심있는 게임을 선택하여 커뮤니티에 참여해보세요!
+        </p>
+
+    </section>
+
+
+    <!-- ==================== GAME LIST ==================== -->
+    <section class="game-grid">
+
+
+        <!-- League of Legends -->
+        <article class="game-card">
+
+            <!--
+                게임 메인 이미지는 링크 없음
+            -->
+            <img
+                    th:src="@{/images/game/lol-banner.png}"
+                    src="/images/game/lol-banner.png"
+                    alt="리그 오브 레전드"
+                    class="game-banner"
+            >
+
+
+            <div class="game-info">
+
+                <!-- 게임 로고 이미지 / 링크 없음 -->
+                <img
+                        th:src="@{/images/game/lol-logo.png}"
+                        src="/images/game/lol-logo.png"
+                        alt="리그 오브 레전드 로고"
+                        class="game-logo"
+                >
+
+
+                <div class="game-text">
+
+                    <!-- 글자만 링크 -->
+                    <a
+                            th:href="@{/board/lol}"
+                            class="game-title">
+                        리그 오브 레전드
+                    </a>
+
+                    <p class="game-description">
+                        전략과 팀워크가 빛나는 MOBA의 정석
+                    </p>
+
+                </div>
+
+                <span class="arrow">›</span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- Valorant -->
+        <article class="game-card">
+
+            <img
+                    th:src="@{/images/game/valorant-banner.png}"
+                    src="/images/game/valorant-banner.png"
+                    alt="발로란트"
+                    class="game-banner"
+            >
+
+            <div class="game-info">
+
+                <img
+                        th:src="@{/images/game/valorant-logo.png}"
+                        src="/images/game/valorant-logo.png"
+                        alt="발로란트 로고"
+                        class="game-logo"
+                >
+
+                <div class="game-text">
+
+                    <a
+                            th:href="@{/board/valorant}"
+                            class="game-title">
+                        발로란트
+                    </a>
+
+                    <p class="game-description">
+                        전술과 정확도가 중요한 5:5 FPS
+                    </p>
+
+                </div>
+
+                <span class="arrow">›</span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- MapleStory -->
+        <article class="game-card">
+
+            <img
+                    th:src="@{/images/game/maple-banner.png}"
+                    src="/images/game/maple-banner.png"
+                    alt="메이플스토리"
+                    class="game-banner"
+            >
+
+            <div class="game-info">
+
+                <img
+                        th:src="@{/images/game/maple-logo.png}"
+                        src="/images/game/maple-logo.png"
+                        alt="메이플스토리 로고"
+                        class="game-logo"
+                >
+
+                <div class="game-text">
+
+                    <a
+                            th:href="@{/board/maple}"
+                            class="game-title">
+                        메이플스토리
+                    </a>
+
+                    <p class="game-description">
+                        함께 성장하는 추억의 MMORPG
+                    </p>
+
+                </div>
+
+                <span class="arrow">›</span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- KartRider -->
+        <article class="game-card">
+
+            <img
+                    th:src="@{/images/game/kart-banner.png}"
+                    src="/images/game/kart-banner.png"
+                    alt="카트라이더"
+                    class="game-banner"
+            >
+
+            <div class="game-info">
+
+                <img
+                        th:src="@{/images/game/kart-logo.png}"
+                        src="/images/game/kart-logo.png"
+                        alt="카트라이더 로고"
+                        class="game-logo"
+                >
+
+                <div class="game-text">
+
+                    <a
+                            th:href="@{/board/kart}"
+                            class="game-title">
+                        카트라이더
+                    </a>
+
+                    <p class="game-description">
+                        스피드의 짜릿함, 레이싱의 즐거움
+                    </p>
+
+                </div>
+
+                <span class="arrow">›</span>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- Tarisland -->
+        <article class="game-card">
+
+            <img
+                    th:src="@{/images/game/tarisland-banner.png}"
+                    src="/images/game/tarisland-banner.png"
+                    alt="타리스랜드"
+                    class="game-banner"
+            >
+
+            <div class="game-info">
+
+                <img
+                        th:src="@{/images/game/tarisland-logo.png}"
+                        src="/images/game/tarisland-logo.png"
+                        alt="타리스랜드 로고"
+                        class="game-logo"
+                >
+
+                <div class="game-text">
+
+                    <a
+                            th:href="@{/board/tarisland}"
+                            class="game-title">
+                        타리스랜드
+                    </a>
+
+                    <p class="game-description">
+                        생존과 전투의 극한을 경험하다
+                    </p>
+
+                </div>
+
+                <span class="arrow">›</span>
+
+            </div>
+
+        </article>
+
+    </section>
+
+</main>
+
+
+<footer class="footer">
+    © 2026 멋사라이브. All rights reserved.
+</footer>
+
+</body>
+</html>

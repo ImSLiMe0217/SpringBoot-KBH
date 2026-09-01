@@ -1,7 +1,11 @@
-package net.likelion.bebc25.spring.aop.springaop;
+package net.likelion.bebc25.intellij;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Driver {
-    private Car car;
+    private final Car car;
+
 
     public Driver(Car car) {
         System.out.println("called Constructor Injection: " + car);

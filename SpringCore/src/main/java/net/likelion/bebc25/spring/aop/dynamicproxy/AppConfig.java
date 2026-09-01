@@ -3,6 +3,8 @@ package net.likelion.bebc25.spring.aop.dynamicproxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.lang.reflect.Proxy;
+
 // 스프링 컨테이너에 알려주는 앱 설정 클래스
 @Configuration
 public class AppConfig {
@@ -10,8 +12,12 @@ public class AppConfig {
     public Car car() {
 //        Car target = new GasolineCar();
         Car target = new HybridCar();
-//        Car logProxy = new LogProxy(target);
-        return target;
+        Car proxyCar = (Car) Proxy.newProxyInstance(
+                Car.class.getClassLoader(),
+                new Class[] {Car.class},
+                new TimeCheckInvocationHandler(target)
+        );
+        return proxyCar;
     }
 
     @Bean

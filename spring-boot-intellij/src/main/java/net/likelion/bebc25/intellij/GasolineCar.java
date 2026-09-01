@@ -1,5 +1,8 @@
-package net.likelion.bebc25.spring.aop.springaop;
+package net.likelion.bebc25.intellij;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class GasolineCar implements Car {
     public void startEngine() {System.out.println("(Gasoline) Engine Start");}
 
