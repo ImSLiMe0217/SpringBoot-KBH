@@ -15,7 +15,7 @@ CREATE TABLE member
     password      VARCHAR(255) NOT NULL,
     nickname      VARCHAR(50)  NOT NULL,
     profile_image VARCHAR(255),
-    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at    DATETIME DEFAULT CURRENT_TIMESTAMP()
 );
 
 -- 2. 회원 상세 테이블 (1:1 수직 분할 개체)
@@ -36,7 +36,7 @@ CREATE TABLE post
     content    TEXT   NOT NULL,
     image_url  VARCHAR(255),
     like_count INT      DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP(),
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (member_id) REFERENCES member (id) ON DELETE CASCADE
 );
@@ -57,7 +57,7 @@ CREATE TABLE comment
     post_id    BIGINT NOT NULL,
     member_id  BIGINT NOT NULL,
     content    TEXT   NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP(),
     FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member (id) ON DELETE CASCADE
 );
@@ -68,7 +68,7 @@ CREATE TABLE post_like
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id  BIGINT NOT NULL,
     post_id    BIGINT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP(),
     UNIQUE KEY uk_member_post_like (member_id, post_id),
     FOREIGN KEY (member_id) REFERENCES member (id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE
@@ -80,7 +80,7 @@ CREATE TABLE bookmark
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id  BIGINT NOT NULL,
     post_id    BIGINT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP(),
     UNIQUE KEY uk_member_post_bookmark (member_id, post_id),
     FOREIGN KEY (member_id) REFERENCES member (id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES post (id) ON DELETE CASCADE
