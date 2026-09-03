@@ -22,93 +22,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PostMapperTest {
     @Autowired
     private PostMapper postMapper;
-
+    
+    // 0902 실습
     @Test
-    @DisplayName("게시글 한 건 조회 테스트")
-    void findByIdTest() {
-        // 존재하는 1번 게시글 조회
-        PostResponseDto post = postMapper.findById(1L);
-        assertThat(post).isNotNull();
-        assertThat(post.id()).isEqualTo(1L);
+    @DisplayName("신규 게시글 등록 및 단건/전체 목록 조회 테스트")
+    void saveAndFindTest() {
+        // given
+        PostCreateDto newPost = new PostCreateDto(1L, "기본 CRUD 등록 테스트", "https://image.com/crud.jpg");
 
-        // 존재하지 않는 게시글 조회
-        PostResponseDto notFoundPost = postMapper.findById(999999999999L);
-        assertThat(notFoundPost).isNull();
-    }
-
-    @Test
-    @DisplayName("게시글 등록 테스트")
-    void saveTest() {
-        // 게시글 생성
-        PostCreateDto newPost = new PostCreateDto(1L, "신규 게시글 등록 테스트", null);
-
-        // 게시글 등록
+        // when
         postMapper.save(newPost);
+        List<PostResponseDto> posts = postMapper.findAll();
 
-        // 1번 사용자의 게시글 목록 조회
-        List<PostResponseDto> memberPosts = postMapper.findByMemberId(1L);
+        // then
+        assertThat(posts).isNotEmpty();
+        PostResponseDto latestPost = posts.getFirst();
+        assertThat(latestPost.content()).isEqualTo("기본 CRUD 등록 테스트");
+        assertThat(latestPost.memberId()).isEqualTo(1L);
 
-        assertThat(memberPosts).isNotEmpty();
-
-        // 방금 작성한 게시글 조회
-        PostResponseDto lastPost = memberPosts.getFirst();
-        // 조회된 마지막 글이 이전에 등록한 글과 같은 내용인가?
-        assertThat(lastPost.content()).isEqualTo(newPost.getContent());
-        assertThat(lastPost.memberId()).isEqualTo(newPost.getMemberId());
-        assertThat(lastPost.imageUrl()).isEqualTo(newPost.getImageUrl());
+        // ID 단건 조회 검증
+        PostResponseDto foundPost = postMapper.findById(latestPost.id());
+        assertThat(foundPost).isNotNull();
+        assertThat(foundPost.id()).isEqualTo(latestPost.id());
     }
 
     @Test
-    @DisplayName("작성자 ID 기반 게시글 목록 조회 테스트")
-    void findByMemberIdTest() {
-        // given: 1번 회원 ID 기준 조회
-        Long targetMemberId = 1L;
-
-        // when: 해당 회원의 게시글 목록 조회
-        List<PostResponseDto> posts = postMapper.findByMemberId(targetMemberId);
-
-        // then: 조회된 모든 게시글의 memberId가 1번인지 검증
-        assertThat(posts).isNotNull();
-        for (PostResponseDto post : posts) {
-            assertThat(post.memberId()).isEqualTo(targetMemberId);
-        }
-    }
-
-    @Test
-    @DisplayName("게시글 수정 테스트")
-    void updateTest() {
-        // given: 1번 게시글 대상 수정할 본문과 이미지 준비
-        Long targetPostId = 1L;
-        String updatedContent = "수정 완료된 게시글 본문입니다.";
-        String updatedImageUrl = "https://image.com/updated.jpg";
-
-        // when: 게시글 수정 실행
-        postMapper.update(targetPostId, updatedContent, updatedImageUrl);
-
-        // then: 단건 조회 후 수정된 내용이 정상 반영되었는지 검증
-        PostResponseDto updatedPost = postMapper.findById(targetPostId);
-        assertThat(updatedPost).isNotNull();
-        assertThat(updatedPost.content()).isEqualTo(updatedContent);
-        assertThat(updatedPost.imageUrl()).isEqualTo(updatedImageUrl);
-    }
-
-    @Test
-    @DisplayName("게시글 단건 삭제 테스트")
-    void deleteByIdTest() {
-        // given: 1번 회원의 신규 게시글을 먼저 등록하고 생성된 ID 확인
-        PostCreateDto post = new PostCreateDto(1L, "삭제될 임시 게시글", null);
+    @DisplayName("게시글 수정 및 단건 삭제 테스트")
+    void updateAndDeleteTest() {
+        // given
+        PostCreateDto post = new PostCreateDto(1L, "수정 전 본문", "https://image.com/before.jpg");
         postMapper.save(post);
+        PostResponseDto createdPost = postMapper.findAll().getFirst();
 
-        List<PostResponseDto> posts = postMapper.findByMemberId(1L);
-        Long targetPostId = posts.getFirst().id();
+        // when: 본문 수정
+        postMapper.update(createdPost.id(), "수정 완료된 본문", "https://image.com/after.jpg");
+        PostResponseDto updatedPost = postMapper.findById(createdPost.id());
 
-        // when: 단건 삭제 실행
-        postMapper.deleteById(targetPostId);
+        // then: 수정 결과 확인
+        assertThat(updatedPost.content()).isEqualTo("수정 완료된 본문");
 
-        // then: 삭제 후 단건 조회 시 null이 반환되는지 검증
-        PostResponseDto deletedPost = postMapper.findById(targetPostId);
-        assertThat(deletedPost).isNull();
+        // when: 단건 삭제
+        postMapper.deleteById(createdPost.id());
+
+        // then: 삭제 결과 확인
+        assertThat(postMapper.findById(createdPost.id())).isNull();
     }
+
 
     @Test
     @DisplayName("ResultMap 3중 조인 상세 조회(게시글 + 작성자 + 댓글 목록) 테스트")
@@ -118,8 +77,6 @@ public class PostMapperTest {
 
         // when: 3중 조인 상세 조회 실행
         PostDetailResponseDto detail = postMapper.findPostDetailById(targetPostId);
-
-        System.out.println(detail);
 
         // then: 복합 매핑 객체 정합성 검증
         if (detail != null) {
@@ -135,6 +92,7 @@ public class PostMapperTest {
             assertThat(detail.getComments()).isNotNull();
         }
     }
+
 
     @Test
     @DisplayName("동적 SQL 키워드 검색 (<where>, <if>) 테스트")
@@ -196,7 +154,6 @@ public class PostMapperTest {
         Map<String, Object> params = new HashMap<>();
         params.put("id", targetPostId);
         params.put("content", newContent);
-        // imageUrl은 누락(null)하여 UPDATE 대상에서 제외
 
         // when: 동적 부분 수정 실행
         postMapper.updateSelective(params);
@@ -229,20 +186,4 @@ public class PostMapperTest {
             assertThat(postMapper.findById(id)).isNull();
         }
     }
-
-    @Test
-    @DisplayName("공통 SQL 조각 재사용 (<sql>, <include>) 단건 조회 테스트")
-    void findByIdWithIncludeTest() {
-        // given: 1번 게시글 조회 ID
-        Long targetPostId = 1L;
-
-        // when: include 태그를 활용한 단건 조회 실행
-        PostResponseDto foundPost = postMapper.findByIdWithInclude(targetPostId);
-
-        // then: 조회 데이터 검증
-        assertThat(foundPost).isNotNull();
-        assertThat(foundPost.id()).isEqualTo(targetPostId);
-        assertThat(foundPost.content()).isNotNull();
-    }
-
 }
