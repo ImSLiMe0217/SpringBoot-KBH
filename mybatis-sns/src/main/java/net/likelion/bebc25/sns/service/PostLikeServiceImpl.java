@@ -1,13 +1,14 @@
 package net.likelion.bebc25.sns.service;
 
-import lombok.AllArgsConstructor;
 import net.likelion.bebc25.sns.dto.LikeToggleResponseDto;
 import net.likelion.bebc25.sns.dto.PostResponseDto;
 import net.likelion.bebc25.sns.mapper.PostLikeMapper;
 import net.likelion.bebc25.sns.mapper.PostMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class PostLikeServiceImpl implements PostLikeService {
 
     private final PostMapper postMapper;
@@ -19,27 +20,25 @@ public class PostLikeServiceImpl implements PostLikeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public LikeToggleResponseDto toggleLike(Long memberId, Long postId) {
-
-        // 1. 대상 게시글의 존재 여부 확인
+        // 1. 대상 게시글 존재 여부 검증 (PostMapper)
         PostResponseDto post = postMapper.findById(postId);
         if (post == null) {
-            throw new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + postId);
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다. ID: " + postId);
         }
 
-        // 2. 현재 사용자의 좋아요 등록 여부 확인
+        // 2. 현재 회원의 좋아요 등록 여부 확인 (PostLikeMapper)
         boolean isLiked = postLikeMapper.countLike(memberId, postId) > 0;
 
         if (isLiked) {
-            // 3-1. 이미 등록되어 있을 경우 등록 취소 처리
-            // 좋아요 제거 -> 좋아요 수 1 감소
+            // 기등록 상태: 좋아요 취소 (삭제) 및 like_count 1 감소
             postLikeMapper.deleteLike(memberId, postId);
             postMapper.decreaseLikeCount(postId);
             return new LikeToggleResponseDto(false, post.likeCount() - 1);
         }
         else {
-            // 3-2. 등록되어 있지 않을 경우 등록 처리
-            // 좋아요 추가 -> 좋아요 수 1 증가
+            // 미등록 상태: 좋아요 등록 및 like_count 1 증가
             postLikeMapper.insertLike(memberId, postId);
             postMapper.increaseLikeCount(postId);
             return new LikeToggleResponseDto(true, post.likeCount() + 1);

@@ -10,7 +10,7 @@ spring:
   # 데이터베이스 초기화 설정 (애플리케이션 구동 시 schema.sql 및 data.sql 자동 실행)
   sql:
     init:
-      mode: always
+      mode: never
 
 # MyBatis 설정
 mybatis:

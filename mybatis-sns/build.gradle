@@ -26,14 +26,19 @@ dependencies {
 
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.1'
     runtimeOnly 'com.mysql:mysql-connector-j'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.1'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Spring MVC 및 Jackson 라이브러리가 기본 포함된 웹 스타터
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-
     // Mockito 동적 에이전트 및 CDS 공유 경고 비활성화
     jvmArgs('-XX:+EnableDynamicAgentLoading', '-Xshare:off')
 }
+

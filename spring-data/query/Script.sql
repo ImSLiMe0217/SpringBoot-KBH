@@ -25,6 +25,30 @@ VALUES
 	(1, 3, "3번 작성자의 댓글", NOW());
 
 
+
 UPDATE post SET content = 'content'WHERE id = 1;
 UPDATE post SET image_url = NULL WHERE id = 1;
-UPDATE post SETupdated_at = NOW() WHERE id = 1;
+UPDATE post SET updated_at = NOW() WHERE id = 1;
+
+-- 좋아요 등록
+INSERT INTO post_like (member_id, post_id)
+VALUES (1, 2);
+
+-- 좋아요 취소
+DELETE FROM post_like WHERE member_id = 1 AND post_id = 2;
+
+-- 좋아요 등록 여부 조회
+SELECT COUNT(*) FROM post_like WHERE member_id = 1 AND post_id = 2;
+
+
+-- 좋아요 수치 증가
+UPDATE post
+SET like_count = like_count +  1
+WHERE id = 2;
+
+SELECT * FROM post WHERE id = 2;
+
+-- 좋아요 수치 감소
+UPDATE post
+SET like_count = like_count -  1
+WHERE id = 2;
