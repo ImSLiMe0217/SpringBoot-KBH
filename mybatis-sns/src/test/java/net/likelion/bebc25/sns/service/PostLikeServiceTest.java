@@ -1,7 +1,7 @@
 package net.likelion.bebc25.sns.service;
 
-import net.likelion.bebc25.sns.dto.LikeToggleResponseDto;
-import net.likelion.bebc25.sns.dto.PostResponseDto;
+import net.likelion.bebc25.sns.dto.LikeToggleResponse;
+import net.likelion.bebc25.sns.dto.PostResponse;
 import net.likelion.bebc25.sns.mapper.PostLikeMapper;
 import net.likelion.bebc25.sns.mapper.PostMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -36,17 +36,17 @@ class PostLikeServiceTest {
         // given: 1번 회원이 1번 게시글에 좋아요 시도 (초기 미등록 상태)
         Long memberId = 1L;
         Long postId = 1L;
-        PostResponseDto beforePost = postMapper.findById(postId);
+        PostResponse beforePost = postMapper.findById(postId);
         int initialLikeCount = beforePost.likeCount();
 
         // when: 첫 번째 토글 실행 (좋아요 등록)
-        LikeToggleResponseDto result = postLikeService.toggleLike(memberId, postId);
+        LikeToggleResponse result = postLikeService.toggleLike(memberId, postId);
 
         // then: DTO 응답값 검증 및 DB 데이터 정합성 확인
         assertThat(result.liked()).isTrue();
         assertThat(result.likeCount()).isEqualTo(initialLikeCount + 1);
         assertThat(postLikeMapper.countLike(memberId, postId)).isEqualTo(1);
-        PostResponseDto afterPost = postMapper.findById(postId);
+        PostResponse afterPost = postMapper.findById(postId);
         assertThat(afterPost.likeCount()).isEqualTo(initialLikeCount + 1);
     }
 
@@ -57,17 +57,17 @@ class PostLikeServiceTest {
         Long memberId = 1L;
         Long postId = 1L;
         postLikeService.toggleLike(memberId, postId);
-        PostResponseDto likedPost = postMapper.findById(postId);
+        PostResponse likedPost = postMapper.findById(postId);
         int currentLikeCount = likedPost.likeCount();
 
         // when: 두 번째 토글 실행 (좋아요 취소)
-        LikeToggleResponseDto result = postLikeService.toggleLike(memberId, postId);
+        LikeToggleResponse result = postLikeService.toggleLike(memberId, postId);
 
         // then: DTO 응답값 검증 및 DB 데이터 정합성 확인
         assertThat(result.liked()).isFalse();
         assertThat(result.likeCount()).isEqualTo(currentLikeCount - 1);
         assertThat(postLikeMapper.countLike(memberId, postId)).isEqualTo(0);
-        PostResponseDto unlikedPost = postMapper.findById(postId);
+        PostResponse unlikedPost = postMapper.findById(postId);
         assertThat(unlikedPost.likeCount()).isEqualTo(currentLikeCount - 1);
     }
 
