@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-//@RestController
+@RestController
 @RequestMapping("/api/v1/posts")
 public class PostRestController {
     private final PostService postService;
@@ -61,15 +61,6 @@ public class PostRestController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PostUpdateRequest request
     ) {
-        // 수정 대상 게시물 조회
-        PostResponse post = postService.getPostById(id);
-
-        // 수정 요청한 회원의 ID와 게시물 작성자의 ID가 일치하는지 확인
-        // 불일치 시 403 반환
-        if (!post.memberId().equals(userDetails.getId())) {
-            throw new IllegalStateException("본인의 게시글만 수정/삭제 가능합니다.");
-        }
-
         // 게시글 수정 및 수정된 상태의 게시글 정보 반환
         postService.updatePost(id, request);
         PostResponse updatedPost = postService.getPostById(id);
@@ -83,15 +74,6 @@ public class PostRestController {
 //            @RequestHeader("X-Member-Id") Long memberId
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        // 삭제 대상 게시물 조회
-        PostResponse post = postService.getPostById(id);
-
-        // 수정 요청한 회원의 ID와 게시물 작성자의 ID가 일치하는지 확인
-        // 불일치 시 403 반환
-        if (!post.memberId().equals(userDetails.getId())) {
-            throw new IllegalStateException("본인의 게시글만 수정/삭제 가능합니다.");
-        }
-
         // 게시글 수정 및 수정된 상태의 게시글 정보 반환
         postService.deletePost(id);
 

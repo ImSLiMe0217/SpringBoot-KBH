@@ -26,7 +26,7 @@ import java.net.URI;
 import java.util.List;
 
 @Tag(name = "SNS 게시글 API", description = "피드 게시글 등록, 조회, 수정, 삭제를 담당하는 REST 컨트롤러")
-@RestController
+//@RestController
 @RequestMapping("/api/v1/posts")
 public class PostRestControllerSwagger {
 
