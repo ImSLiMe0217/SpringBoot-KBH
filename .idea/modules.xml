@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/SpringBoot-KBH.iml" filepath="$PROJECT_DIR$/.idea/SpringBoot-KBH.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mybatis-sns.main.iml" filepath="$PROJECT_DIR$/.idea/modules/mybatis-sns.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/mybatis-sns.test.iml" filepath="$PROJECT_DIR$/.idea/modules/mybatis-sns.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spring-board.main.iml" filepath="$PROJECT_DIR$/.idea/modules/spring-board.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/spring-board.test.iml" filepath="$PROJECT_DIR$/.idea/modules/spring-board.test.iml" />
     </modules>
   </component>
 </project>

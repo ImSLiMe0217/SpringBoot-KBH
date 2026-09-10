@@ -14,10 +14,12 @@ import net.likelion.bebc25.sns.dto.PostCreateRequest;
 import net.likelion.bebc25.sns.dto.PostResponse;
 import net.likelion.bebc25.sns.dto.PostSearchRequest;
 import net.likelion.bebc25.sns.dto.PostUpdateRequest;
+import net.likelion.bebc25.sns.security.principal.CustomUserDetails;
 import net.likelion.bebc25.sns.service.PostService;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -74,9 +76,10 @@ public class PostRestControllerSwagger {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @Parameter(description = "작성자 회원 ID", example = "1")
-            @RequestHeader("X-Member-Id") Long memberId,
+//            @RequestHeader("X-Member-Id") Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PostCreateRequest request) {
-        request.setMemberId(memberId); // 임시 헤더의 회원 식별자를 모델(DTO)에 주입
+        request.setMemberId(userDetails.getId()); // 임시 헤더의 회원 식별자를 모델(DTO)에 주입
         PostResponse createdPost = postService.createPost(request);
         URI location = URI.create("/api/v1/posts/" + createdPost.id());
         return ResponseEntity.created(location).body(createdPost);
@@ -104,12 +107,13 @@ public class PostRestControllerSwagger {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(
             @Parameter(description = "작성자 회원 ID", example = "1")
-            @RequestHeader("X-Member-Id") Long memberId,
+//            @RequestHeader("X-Member-Id") Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "수정할 게시글 ID", example = "1")
             @PathVariable("id") Long id,
             @Valid @RequestBody PostUpdateRequest request) {
         PostResponse post = postService.getPostById(id);
-        if (!post.memberId().equals(memberId)) {
+        if (!post.memberId().equals(userDetails.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         postService.updatePost(id, request);
@@ -138,11 +142,12 @@ public class PostRestControllerSwagger {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @Parameter(description = "작성자 회원 ID", example = "1")
-            @RequestHeader("X-Member-Id") Long memberId,
+//            @RequestHeader("X-Member-Id") Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Parameter(description = "삭제할 게시글 ID", example = "1")
             @PathVariable("id") Long id) {
         PostResponse post = postService.getPostById(id);
-        if (!post.memberId().equals(memberId)) {
+        if (!post.memberId().equals(userDetails.getId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         postService.deletePost(id);

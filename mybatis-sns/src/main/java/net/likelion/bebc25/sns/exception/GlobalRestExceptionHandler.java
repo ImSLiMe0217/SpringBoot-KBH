@@ -1,5 +1,6 @@
 package net.likelion.bebc25.sns.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.sns.dto.ApiErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalRestExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
@@ -49,7 +51,7 @@ public class GlobalRestExceptionHandler {
     // 서버 내부 오류 (500 Internal Server Error)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneralException(Exception ex) {
-
+        log.error(ex.getMessage());
         ApiErrorResponse response = ApiErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, ex.getMessage());
         return ResponseEntity.status(ErrorCode.INTERNAL_SERVER_ERROR.getHttpStatus()).body(response);
     }

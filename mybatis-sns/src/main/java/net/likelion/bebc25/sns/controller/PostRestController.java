@@ -2,9 +2,11 @@ package net.likelion.bebc25.sns.controller;
 
 import jakarta.validation.Valid;
 import net.likelion.bebc25.sns.dto.*;
+import net.likelion.bebc25.sns.security.principal.CustomUserDetails;
 import net.likelion.bebc25.sns.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -32,10 +34,11 @@ public class PostRestController {
     // 게시글 등록
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
-            @RequestHeader("X-Member-Id") Long memberId,
+//            @RequestHeader("X-Member-Id") Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PostCreateRequest request
     ) {
-        request.setMemberId(memberId);
+        request.setMemberId(userDetails.getId());
         PostResponse createdPost = postService.createPost(request);
         URI location = URI.create("/api/v1/posts" + createdPost.id());
         return ResponseEntity.created(location).body(createdPost);
@@ -54,7 +57,8 @@ public class PostRestController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable("id") Long id,
-            @RequestHeader("X-Member-Id") Long memberId,
+//            @RequestHeader("X-Member-Id") Long memberId,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PostUpdateRequest request
     ) {
         // 수정 대상 게시물 조회
@@ -62,7 +66,7 @@ public class PostRestController {
 
         // 수정 요청한 회원의 ID와 게시물 작성자의 ID가 일치하는지 확인
         // 불일치 시 403 반환
-        if (!post.memberId().equals(memberId)) {
+        if (!post.memberId().equals(userDetails.getId())) {
             throw new IllegalStateException("본인의 게시글만 수정/삭제 가능합니다.");
         }
 
@@ -76,14 +80,15 @@ public class PostRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<PostResponse> deletePost(
             @PathVariable("id") Long id,
-            @RequestHeader("X-Member-Id") Long memberId
+//            @RequestHeader("X-Member-Id") Long memberId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         // 삭제 대상 게시물 조회
         PostResponse post = postService.getPostById(id);
 
         // 수정 요청한 회원의 ID와 게시물 작성자의 ID가 일치하는지 확인
         // 불일치 시 403 반환
-        if (!post.memberId().equals(memberId)) {
+        if (!post.memberId().equals(userDetails.getId())) {
             throw new IllegalStateException("본인의 게시글만 수정/삭제 가능합니다.");
         }
 

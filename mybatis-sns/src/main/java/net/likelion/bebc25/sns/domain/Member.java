@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @ToString
 public class Member {
     private Long id;
+    private String nickname;
     private String email;
     private String password;
     private String profileImage;
