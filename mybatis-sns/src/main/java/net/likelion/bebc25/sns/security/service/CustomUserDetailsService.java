@@ -24,4 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         return new CustomUserDetails(member);
     }
+
+    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
+        Member member = memberMapper.findById(id);
+        if (member == null) {
+            throw new UsernameNotFoundException("해당 사용자가 존재하지 않습니다.");
+        }
+        return new CustomUserDetails(member);
+    }
 }
