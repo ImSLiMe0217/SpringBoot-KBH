@@ -6,10 +6,7 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/api/v1/members/me"
-  auth:
-    type: basic
-    username: admin@example.com
-    password: "1234"
+  auth: inherit
 
 settings:
   encodeUrl: true
