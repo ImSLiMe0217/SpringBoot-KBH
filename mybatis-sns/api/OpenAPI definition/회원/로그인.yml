@@ -14,8 +14,9 @@ http:
         "password":"1234"
       }
   auth:
-    type: bearer
-    token: ""
+    type: basic
+    username: bh021790@gmail.com
+    password: ""
 
 runtime:
   actions:
